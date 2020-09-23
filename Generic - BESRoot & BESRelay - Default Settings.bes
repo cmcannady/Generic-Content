@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title><![CDATA[Generic | BESRoot & BESRelay | Default Settings]]></Title>
+		<Description><![CDATA[This fixlet enforces the default BESRoot &amp; BESRelay settings for ALL infrastructure endpoints managed by BigFix. ]]></Description>
+		<Relevance>(exists relay service) OR (exists main gather service)</Relevance>
+		<Relevance>(not exists setting "_BESRelay_Register_Affiliation_AdvertisementList" whose (value of it = "HOSTNAME-PARSING-OR-AD-SITE-DETAILS") of client)</Relevance>
+		<Relevance>(not exists setting "_BESClient_RelaySelect_FailoverRelay" whose (value of it = "http://DMZ-BESRELAY-EXTERNAL-FDQN:52311/bfmirror/downloads/") of client)</Relevance>
+		<Relevance>(not exists setting "_BESClient_NetSignature" whose (value of it = unique value of concatenations ";" of (it as string) whose(it != "127.0.0.1" and it does not start with "169.") of addresses of ip interfaces of network as string) of client)</Relevance>
+		<Category>Generic, BESRelay, Default Settings</Category>
+		<Source>HCL BigFix Professional Services</Source>
+		<SourceID>casey.cannady@hcl.com</SourceID>
+		<SourceReleaseDate>2019-10-23</SourceReleaseDate>
+		<SourceSeverity>Low</SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 23 Sep 2020 22:03:26 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">// Set the SeekList using the AD-Site client property
+setting "_BESRelay_Register_Affiliation_AdvertisementList"="HOSTNAME-PARSING-OR-AD-SITE-DETAILS" on "{now}" for client
+
+// Set the failover relay setting to the DMZ address
+setting "_BESClient_RelaySelect_FailoverRelay"="http://DMZ-BESRELAY-EXTERNAL-FDQN:52311/bfmirror/downloads/" on "{now}" for client
+
+// Sets the discovery date property
+setting "Discovery Date"="{creation time of parent folder of client}" on "{now}" for client
+
+// Tattoo the settings with the Network Signature
+setting "_BESClient_NetSignature"="{unique value of concatenations ";" of (it as string) whose(it != "127.0.0.1" and it does not start with "169.") of addresses of ip interfaces of network as string}" on "{now}" for client
+
+// Force client to post updated results
+Notify Client ForceRefresh</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Fixlet>
+</BES>
