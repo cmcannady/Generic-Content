@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Generic | BESClient | Default Settings</Title>
+		<Description>This fixlet enforces the default BESClient settings for ALL non-infrastructure endpoints managed by BigFix. </Description>
+		<Relevance>(not exists relay service) AND (not exists main gather service)</Relevance>
+		<Relevance>(not exists setting "__RelaySelect_Automatic" whose (value of it = "1") of client)</Relevance>
+		<Relevance>(not exists setting "_BESClient_Register_Affiliation_SeekList" whose (value of it = "HOSTNAME-PARSING-OR-AD-SITE-DETAILS") of client)</Relevance>
+		<Relevance>(not exists setting "_BESClient_Report_MinimumInterval" whose (value of it = "1800") of client)</Relevance>
+		<Relevance>(not exists setting "_BESClient_RelaySelect_ResistFailureIntervalSeconds" whose (value of it = "21600") of client)</Relevance>
+		<Relevance>(not exists setting "_BESClient_Comm_CommandPollEnable" whose (value of it = "1") of client)</Relevance>
+		<Relevance>(not exists setting "_BESClient_Comm_CommandPollIntervalSeconds" whose (value of it = "21600") of client)</Relevance>
+		<Relevance>(not exists setting "_BESClient_Download_PreCacheStageDiskLimitMB" whose (value of it = "8192") of client)</Relevance>
+		<Relevance>(not exists setting "_BESClient_RelaySelect_FailoverRelay" whose (value of it = "http://DMZ-BESRELAY-EXTERNAL-FDQN:52311/bfmirror/downloads/") of client)</Relevance>
+		<Relevance>(not exists setting "_BESClient_NetSignature" whose (value of it = unique value of concatenations ";" of (it as string) whose(it != "127.0.0.1" and it does not start with "169.") of addresses of ip interfaces of network as string) of client)</Relevance>
+		<Category>Generic, BESClient, Default, Settings</Category>
+		<Source>HCL BigFix Professional Services</Source>
+		<SourceID>casey.cannady@hcl.com</SourceID>
+		<SourceReleaseDate>2019-10-23</SourceReleaseDate>
+		<SourceSeverity>Low</SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 23 Sep 2020 22:03:52 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[// Set agents to use automatic relay selection
+setting "__RelaySelect_Automatic"="1" on "{now}" for client
+
+// Set the SeekList using the AD-Site client property
+setting "_BESClient_Register_Affiliation_SeekList"="HOSTNAME-PARSING-OR-AD-SITE-DETAILS" on "{now}" for client
+
+// Force client to register with relay
+relay select
+
+// Override default client settings for P&G BES managed endpoints
+setting "_BESClient_Report_MinimumInterval"="1800" on "{now}" for client
+setting "_BESClient_RelaySelect_ResistFailureIntervalSeconds"="21600" on "{now}" for client
+setting "_BESClient_Report_Encryption"="optional" on "{now}" for client
+setting "_BESClient_Comm_CommandPollEnable"="1" on "{now}" for client
+setting "_BESClient_Comm_CommandPollIntervalSeconds"="21600" on "{now}" for client
+setting "_BESClient_Download_MinimumDiskFreeMB"="2048" on "{now}" for client
+setting "_BESClient_Log_Days"="30" on "{now}" for client
+setting "_BESClient_Log_MaxSize"="1536000" on "{now}" for client
+setting "_BESClient_Download_UtilitiesCacheLimitMB"="4096" on "{now}" for client
+setting "_BESClient_Download_DownloadsCacheLimitMB"="4096" on "{now}" for client
+setting "_BESClient_Download_NormalStageDiskLimitMB"="8192" on "{now}" for client
+setting "_BESClient_Download_PreCacheStageDiskLimitMB"="8192" on "{now}" for client
+setting "_BESClient_Resource_AccelerateForPendingMessage"="1" on "{now}" for client
+
+// Sets the discovery date property
+setting "Discovery Date"="{creation time of parent folder of client}" on "{now}" for client
+
+// Set the failover relay setting to the DMZ address
+setting "_BESClient_RelaySelect_FailoverRelay"="http://DMZ-BESRELAY-EXTERNAL-FDQN:52311/bfmirror/downloads/" on "{now}" for client
+
+// Tattoo the settings with the Network Signature
+setting "_BESClient_NetSignature"="{unique value of concatenations ";" of (it as string) whose(it != "127.0.0.1" and it does not start with "169.") of addresses of ip interfaces of network as string}" on "{now}" for client
+
+// Force client to post updated results
+Notify Client ForceRefresh]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Fixlet>
+</BES>
